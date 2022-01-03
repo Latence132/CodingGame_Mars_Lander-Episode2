@@ -9,17 +9,19 @@ class Player {
     public static void main(String args[]) {
         Scanner in = new Scanner(System.in);
         int surfaceN = in.nextInt(); // the number of points used to draw the surface of Mars.
-        double[][] map = new double[surfaceN][1];
+        double[][] map = new double[surfaceN][2];
 
         for (int i = 0; i < surfaceN; i++) {
             int landX = in.nextInt(); // X coordinate of a surface point. (0 to 6999)
             int landY = in.nextInt(); // Y coordinate of a surface point. By linking all the points together in a sequential fashion, you form the surface of Mars.
-            map[i][0]= landX;
-            map[i][1]= landY;
+            map[i][0] = landX;
+            map[i][1] = landY;
         }
 
         // game loop
-        Shuttle shuttle = new Shuttle(map);
+        Shuttle shuttle = new Shuttle(map, surfaceN);
+        shuttle.printMap();
+        shuttle.setLandableSufrace(shuttle.getLandableSurface());
         while (true) {
             shuttle.setX(in.nextInt());
             shuttle.setY(in.nextInt());
@@ -34,22 +36,68 @@ class Player {
 
 
             // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
-            System.out.println("-20 3");
+            System.out.println("-45 4");
         }
     }
 
     static class Shuttle {
-        int X =0;
-        int Y =0;
-        int hSpeed =0;
-        int vSpeed =0;
-        int fuel =0;
-        int rotate =0;
-        int power =0;
+        int X = 0;
+        int Y = 0;
+        int hSpeed = 0;
+        int vSpeed = 0;
+        int fuel = 0;
+        int rotate = 0;
+        int power = 0;
         double[][] map;
+        int surfaceN = 0;
 
-        public Shuttle(double[][] map) {
+        public double[][] getMap() {
+            return map;
+        }
+
+        public void setMap(double[][] map) {
             this.map = map;
+        }
+
+        public double[][] getLandableSufrace() {
+            return landableSufrace;
+        }
+
+        public void setLandableSufrace(double[][] landableSufrace) {
+            this.landableSufrace = landableSufrace;
+        }
+
+        double[][] landableSufrace; // the coordonate of the landable sufrace
+
+        public Shuttle(double[][] map, int surfaceN) {
+            this.map = map;
+            this.surfaceN = surfaceN;
+        }
+
+        public boolean moveToThelandableSufrace() {
+            return false;
+        }
+
+        public double[][] getLandableSurface() {
+            //get 2 same following height points
+            try {
+                for (int i = 0; i < surfaceN; i++)
+                    if (map[i][1] == map[i + 1][1] && !(map[i][0] - map[i + 1][0] >= 1000)) {
+                        System.err.println("--- plane suface getted ---");
+                        System.err.println(map[i]);
+                        System.err.println(map[i + 1]);
+                        double[][] planeSurface = {{map[i][0], map[i][1]}, {map[i + 1][0], map[i + 1][1]}};
+                        return planeSurface;
+                    }
+            } catch (IndexOutOfBoundsException e) {
+                return null;
+            }
+            return null;
+        }
+
+        public void printMap() {
+            for (double[] point : map)
+                System.err.println("x: " + point[0] + " y: " + point[1]);
         }
 
         public int getX() {
@@ -108,9 +156,7 @@ class Player {
             this.power = power;
         }
 
-        public double[][]  getLandableSurface() {
-            return null;
-        }
+
     }
 
 
