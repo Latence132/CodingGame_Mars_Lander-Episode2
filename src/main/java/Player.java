@@ -21,7 +21,7 @@ class Player {
         // game loop
         Shuttle shuttle = new Shuttle(map, surfaceN);
         shuttle.printMap();
-        shuttle.setLandableSufrace(shuttle.getLandableSurface());
+        shuttle.getLandableSurface(map);
         while (true) {
             shuttle.setX(in.nextInt());
             shuttle.setY(in.nextInt());
@@ -33,6 +33,10 @@ class Player {
 
             // Write an action using System.out.println()
             // To debug: System.err.println("Debug messages...");
+            shuttle.howToMove();
+            shuttle.move();
+
+
 
 
             // rotate power. rotate is the desired rotation angle. power is the desired thrust power.
@@ -41,8 +45,8 @@ class Player {
     }
 
     static class Shuttle {
-        int X = 0;
-        int Y = 0;
+        int X = 0; // X max: 7000 hauteur horizontal
+        int Y = 2500; // Y max: 3000 distance vertical
         int hSpeed = 0;
         int vSpeed = 0;
         int fuel = 0;
@@ -50,49 +54,16 @@ class Player {
         int power = 0;
         double[][] map;
         int surfaceN = 0;
-
-        public double[][] getMap() {
-            return map;
-        }
-
-        public void setMap(double[][] map) {
-            this.map = map;
-        }
-
-        public double[][] getLandableSufrace() {
-            return landableSufrace;
-        }
-
-        public void setLandableSufrace(double[][] landableSufrace) {
-            this.landableSufrace = landableSufrace;
-        }
-
         double[][] landableSufrace; // the coordonate of the landable sufrace
+        String state = "init";
+        double yToReach ;
+        double xToReach ;
+        int nextAngle;
+        int nextPower;
 
         public Shuttle(double[][] map, int surfaceN) {
             this.map = map;
             this.surfaceN = surfaceN;
-        }
-
-        public boolean moveToThelandableSufrace() {
-            return false;
-        }
-
-        public double[][] getLandableSurface() {
-            //get 2 same following height points
-            try {
-                for (int i = 0; i < surfaceN; i++)
-                    if (map[i][1] == map[i + 1][1] && !(map[i][0] - map[i + 1][0] >= 1000)) {
-                        System.err.println("--- plane suface getted ---");
-                        System.err.println(map[i]);
-                        System.err.println(map[i + 1]);
-                        double[][] planeSurface = {{map[i][0], map[i][1]}, {map[i + 1][0], map[i + 1][1]}};
-                        return planeSurface;
-                    }
-            } catch (IndexOutOfBoundsException e) {
-                return null;
-            }
-            return null;
         }
 
         public void printMap() {
@@ -100,60 +71,117 @@ class Player {
                 System.err.println("x: " + point[0] + " y: " + point[1]);
         }
 
+        public void getLandableSurface(double[][] paramMap) {
+            //get 2 same following height points
+            try {
+                for (int i = 0; i < surfaceN; i++)
+                    if (paramMap[i][1] == paramMap[i + 1][1] && !(paramMap[i][0] - paramMap[i + 1][0] >= 1000)) {
+                        System.err.println("--- plane suface getted ---");
+                        System.err.println(paramMap[i]);
+                        System.err.println(paramMap[i + 1]);
+                        // land on the middle Y of the landableSurface
+                        yToReach = (paramMap[i + 1][0] + paramMap[i][0])/2;
+                        // land on the top X of the landableSurface
+                        xToReach = paramMap[i][1];
+                        return;
+                    }
+            } catch (IndexOutOfBoundsException e) {
+                return ;
+            }
+            return ;
+        }
+
+        public boolean isAboveTheLandingSurface() {
+            if((X <= landableSufrace[0][0] || X >= landableSufrace[1][0]) ||  Y < landableSufrace[0][1])
+                return false;
+            return true;
+        }
+
+        public void howToMove() {
+            // select the move to do moveToThelandableSufrace or landing
+            if(isAboveTheLandingSurface()) {
+                setState("landing");
+            } else {
+                setState("moveToThelandableSufrace");
+            }
+        }
+
+
+        public void move() {
+            //Angle de -90° à 90°. Puissance des fusées de 0 à 4.
+
+
+
+            nextAngle = 189;
+            nextPower = 5;
+        }
+
+        // Setter and Getter
         public int getX() {
             return X;
         }
-
         public void setX(int x) {
             X = x;
         }
-
         public int getY() {
             return Y;
         }
-
         public void setY(int y) {
             Y = y;
         }
-
         public int gethSpeed() {
             return hSpeed;
         }
-
         public void sethSpeed(int hSpeed) {
             this.hSpeed = hSpeed;
         }
-
         public int getvSpeed() {
             return vSpeed;
         }
-
         public void setvSpeed(int vSpeed) {
             this.vSpeed = vSpeed;
         }
-
         public int getFuel() {
             return fuel;
         }
-
         public void setFuel(int fuel) {
             this.fuel = fuel;
         }
-
         public int getRotate() {
             return rotate;
         }
-
         public void setRotate(int rotate) {
             this.rotate = rotate;
         }
-
         public int getPower() {
             return power;
         }
-
         public void setPower(int power) {
             this.power = power;
+        }
+        public String getState() {
+            return state;
+        }
+        public void setState(String state) {
+            this.state = state;
+        }
+        public int getSurfaceN() {
+            return surfaceN;
+        }
+        public void setSurfaceN(int surfaceN) {
+            this.surfaceN = surfaceN;
+        }
+        public double[][] getMap() {
+            return map;
+        }
+        public void setMap(double[][] map) {
+            this.map = map;
+        }
+        public double[][] getLandableSufrace() {
+            return landableSufrace;
+        }
+        public void setLandableSufrace(double[][] landableSufrace) {
+            this.landableSufrace = landableSufrace;
         }
 
 
